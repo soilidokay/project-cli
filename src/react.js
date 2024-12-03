@@ -28,15 +28,34 @@ promptProjectName("my-react-ts-library", (projectName) => {
     );
 
     const tsConfig = {
-      compilerOptions: {
-        target: "ES6",
-        module: "ESNext",
-        jsx: "react",
-        declaration: true,
-        outDir: "./dist",
-        strict: true,
+      "compilerOptions": {
+        "target": "ES2015",
+        "lib": [
+          "dom",
+          "dom.iterable",
+          "esnext"
+        ],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "preserve",
       },
-      include: ["src/**/*"],
+      "include": [
+        "src/**/*",
+        "modules/partner-module-config-mfe"
+      ],
+      "exclude": [
+        "node_modules"
+      ]
     };
     fs.writeFileSync("tsconfig.json", JSON.stringify(tsConfig, null, 2));
 
@@ -46,19 +65,19 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import postcss from 'rollup-plugin-postcss';
-
+import { terser } from 'rollup-plugin-terser';
+import path from 'path'
 const packageJson = require('./package.json');
-
 export default {
   input: 'src/index.tsx',
   output: [
     {
-      file: packageJson.main,
+      file:  packageJson.main, // Main CommonJS output
       format: 'cjs',
       sourcemap: true,
     },
     {
-      file: packageJson.module,
+      file: packageJson.module, // Module ESM output
       format: 'esm',
       sourcemap: true,
     },
@@ -67,10 +86,20 @@ export default {
     peerDepsExternal(),
     resolve(),
     commonjs(),
-    typescript({ tsconfig: './tsconfig.json' }),
-    postcss(),
+    typescript({
+      tsconfig: './tsconfig.json', // Use tsconfig.json to manage settings
+      declaration: true,
+      declarationDir: 'dist', // Output type declarations
+      rootDir: 'src',
+    }),
+    postcss({
+      extract: true, // Output CSS file
+      minimize: true, // Minify CSS
+    }),
+    terser(), // Minify JS
   ],
 };
+    
 `;
     fs.writeFileSync("rollup.config.js", rollupConfig.trim());
 
@@ -91,14 +120,54 @@ export const Button: React.FC<ButtonProps> = ({ label, onClick }) => {
 `.trim()
     );
     fs.writeFileSync("src/index.tsx", `export * from './Button';`);
-
-    const packageJson = JSON.parse(fs.readFileSync("package.json"));
-    packageJson.main = "dist/cjs/index.js";
-    packageJson.module = "dist/esm/index.js";
-    packageJson.types = "dist/index.d.ts";
-    packageJson.files = ["dist"];
+    const packageJson = {
+      "name": "core-mfe-module",
+      "version": "1.0.0",
+      "description": "",
+      "main": "dist/index.cjs.js",
+      "module": "dist/index.esm.js",
+      "scripts": {
+        "build": "rollup -c --bundleConfigAsCjs"
+      },
+      "keywords": [
+        "core-mfe"
+      ],
+      "author": "",
+      "license": "ISC",
+      "type": "module",
+      "dependencies": {
+        "tslib": "^2.8.1"
+      },
+      "devDependencies": {
+        "@rollup/plugin-commonjs": "^28.0.1",
+        "@rollup/plugin-node-resolve": "^15.3.0",
+        "@rollup/plugin-typescript": "^12.1.1",
+        "@types/react": "^18.3.1",
+        "@types/react-dom": "^18.3.1",
+        "postcss": "^8.4.49",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "rollup": "^4.28.0",
+        "rollup-plugin-peer-deps-external": "^2.2.4",
+        "rollup-plugin-postcss": "^4.0.2",
+        "rollup-plugin-terser": "^7.0.2",
+        "typescript": "^5.7.2"
+      },
+      "peerDependenciesMeta": {
+        "react": {
+          "optional": true
+        },
+        "react-dom": {
+          "optional": true
+        }
+      },
+      "types": "dist/index.d.ts",
+      "files": [
+        "dist"
+      ]
+    };
     packageJson.scripts = {
-      build: "rollup -c",
+      build: "rollup -c --bundleConfigAsCjs",
     };
     packageJson.peerDependencies = {
       react: "^18.0.0",

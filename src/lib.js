@@ -31,6 +31,8 @@ promptProjectName("my-awesome-ts-library", (projectName) => {
                 outDir: "./dist",
                 strict: true,
             },
+            esModuleInterop: true,
+            allowSyntheticDefaultImports: true,
             include: ["src/**/*"],
         };
         fs.writeFileSync("tsconfig.json", JSON.stringify(tsConfig, null, 2));
