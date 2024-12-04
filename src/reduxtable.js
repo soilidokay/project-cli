@@ -52,7 +52,7 @@ export const FormDelete = CreateFormComfirm<IExampleDTO>({
 })
 `,
   // index.tsx
-  "index.tsx": `import { FC } from 'react'
+  "index.tsx": `import React, { FC } from 'react'
 import { connect } from 'react-redux'
 import { TableFormater } from '@lib/Helpers'
 import { CreateHocLazy } from '@lib-lab/Redux'
