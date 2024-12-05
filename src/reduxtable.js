@@ -52,7 +52,7 @@ export const FormDelete = CreateFormComfirm<IExampleDTO>({
 })
 `,
   // index.tsx
-  "index.tsx": `import { FC } from 'react'
+  "index.tsx": `import React, { FC } from 'react'
 import { connect } from 'react-redux'
 import { TableFormater } from '@lib/Helpers'
 import { CreateHocLazy } from '@lib-lab/Redux'
@@ -249,8 +249,8 @@ export interface IReduxMapDispatch extends ReduxBaseTable.IMapDispatch<IExampleD
 
 export interface IExampleReduxProps extends IReduxMapState, IReduxMapDispatch {}
 `,
-  // service.example.ts
-  "service.example.ts": `import { CRUDServiceBase } from '@lib/Http'
+  // service.ts
+  "service.ts": `import { CRUDServiceBase } from '@lib/Http'
 import { EntityTimeBase } from '@shared/Types'
 
 export interface IExample extends EntityTimeBase {
